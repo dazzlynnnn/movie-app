@@ -2,16 +2,20 @@ import React from "react";
 import axios from "axios";
 import Movie from "./Movie";
 
+
 class App extends React.Component {
   state = {
     isLoading: true,
     movies: []
   };
   getMovies = async () => {
-    const movies = await axios.get("https://yts-proxy.nomadcoders1.now.sh/list_movies.json?sort_by=rating");
-    this.setState({isLoading: false});
-    console.log(movies);
-  };
+    const {
+      data: {
+        data: { movies }
+      }
+    } = await axios.get("https://yts-proxy.nomadcoders1.now.sh/list_movies.json?sort_by=rating");
+    this.setState({ movies, isLoading: false });
+  }
   componentDidMount() {
     this.getMovies();
   }
@@ -27,7 +31,16 @@ class App extends React.Component {
         )
         : (
           <div className="movies">
-            <Movie/>
+            {movies.map(movie => (
+              <Movie 
+                key={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+                genres={movie.genres}
+              />
+            ))}
           </div>
         )}
       </section>
